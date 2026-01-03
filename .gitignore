@@ -1,0 +1,37 @@
+# Sensitive Configuration Files
+.env
+
+# Uploaded Files
+public/uploads/*
+!public/uploads/.gitkeep
+public/qrcodes/*
+!public/qrcodes/.gitkeep
+
+# Logs
+logs/*.log
+debug_controller.log
+debug_error.log
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary Files
+*.tmp
+*.temp
+*.cache
+
+# Backups
+backups/*
+!backups/.gitkeep
+*.sql.backup
+*.bak
+
+
