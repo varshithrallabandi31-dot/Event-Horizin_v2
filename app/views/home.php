@@ -460,48 +460,8 @@ if (empty($events)) {
     </div>
 </div>
 
-<!-- RSVP Flow (Refined for specific events) -->
-<div id="rsvp" class="py-20 bg-cream-100 dark:bg-charcoal-900">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="serif-heading text-4xl font-bold text-charcoal-900 dark:text-white mb-6">Quick RSVP</h2>
-        <p class="text-charcoal-600 dark:text-charcoal-300 mb-10 text-lg">Select an event and apply for approval to get your digital kit.</p>
-        
-        <form action="<?php echo BASE_URL; ?>rsvp/submit" method="POST" class="bg-white dark:bg-charcoal-950 p-8 rounded-3xl border-2 border-charcoal-200 dark:border-charcoal-800 text-left shadow-lg">
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-charcoal-700 dark:text-charcoal-300 mb-2">Select Event</label>
-                <select name="event_id" required class="w-full px-4 py-3 bg-cream-50 dark:bg-charcoal-900 rounded-xl border-2 border-charcoal-200 dark:border-charcoal-700 text-charcoal-800 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition">
-                    <?php foreach($events as $event): ?>
-                    <option value="<?php echo $event['id']; ?>"><?php echo htmlspecialchars($event['title'] ?? ''); ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                    <label class="block text-sm font-semibold text-charcoal-700 dark:text-charcoal-300 mb-2">Full Name</label>
-                    <input type="text" name="name" required class="w-full px-4 py-3 bg-cream-50 dark:bg-charcoal-900 rounded-xl border-2 border-charcoal-200 dark:border-charcoal-700 text-charcoal-800 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition" placeholder="John Doe">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-charcoal-700 dark:text-charcoal-300 mb-2">Phone Number</label>
-                    <input type="tel" name="phone" required class="w-full px-4 py-3 bg-cream-50 dark:bg-charcoal-900 rounded-xl border-2 border-charcoal-200 dark:border-charcoal-700 text-charcoal-800 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition" placeholder="+1 (555) 000-0000">
-                </div>
-            </div>
-            <div class="mb-8">
-                <label class="block text-sm font-semibold text-charcoal-700 dark:text-charcoal-300 mb-2">What interests you most?</label>
-                <select name="interest" class="w-full px-4 py-3 bg-cream-50 dark:bg-charcoal-900 rounded-xl border-2 border-charcoal-200 dark:border-charcoal-700 text-charcoal-800 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition">
-                    <option>The Experience</option>
-                    <option>Networking</option>
-                    <option>Learning</option>
-                    <option>Entertainment</option>
-                </select>
-            </div>
-            <button type="submit" class="w-full py-4 bg-brand-500 text-white font-bold rounded-xl hover:bg-brand-600 transition transform hover:scale-[1.02] shadow-lg shadow-brand-500/20">
-                Submit RSVP Application
-            </button>
-        </form>
+<!-- RSVP form removed - Users should view event details and RSVP from event page -->
 
-
-    </div>
-</div>
 
 <!-- FAQ Section -->
 <div class="py-24 bg-white border-t border-charcoal-200" x-data="{ show: false }" x-intersect="show = true">

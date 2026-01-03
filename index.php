@@ -272,6 +272,13 @@ if ($path === '/' || $path === '/home') {
     $controller->updateFaqs($matches[1]);
 
 } elseif (preg_match('#^/event/(\d+)/delete$#', $path, $matches)) {
+    // Only allow POST requests for delete
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        // Clear any output buffers to allow redirect
+        if (ob_get_level()) ob_end_clean();
+        header('Location: ' . BASE_URL . 'event/' . $matches[1]);
+        exit;
+    }
     require_once __DIR__ . '/app/controllers/EventController.php';
     $controller = new EventController();
     $controller->deleteEvent($matches[1]);
@@ -287,11 +294,6 @@ if ($path === '/' || $path === '/home') {
     require_once __DIR__ . '/app/controllers/EventController.php';
     $controller = new EventController();
     $controller->sendEventFeedback($matches[1]);
-
-} elseif (preg_match('#^/event/(\d+)/delete$#', $path, $matches)) {
-    require_once __DIR__ . '/app/controllers/EventController.php';
-    $controller = new EventController();
-    $controller->deleteEvent($matches[1]);
 
 } elseif ($path === '/events/checkProfileCompleteness') {
     require_once __DIR__ . '/app/controllers/EventController.php';

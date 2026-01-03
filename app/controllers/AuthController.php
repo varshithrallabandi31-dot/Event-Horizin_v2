@@ -28,6 +28,12 @@ class AuthController {
         
         // Store in Session
         $_SESSION['login_otp'] = $otp;
+        
+        // Preserve redirect parameter
+        if (isset($_GET['redirect'])) {
+            $_SESSION['login_redirect'] = $_GET['redirect'];
+        }
+        
         if ($isEmail) {
             $_SESSION['login_email'] = $email;
             unset($_SESSION['login_phone']); // clear previous
@@ -212,23 +218,40 @@ class AuthController {
         if ($isEmail) {
             $user = $userModel->findByEmail($identity);
             if (!$user) {
-                // Create user with Email
-                if ($userModel->createWithEmail($identity)) {
-                    $user = $userModel->findByEmail($identity);
+                // Try to create user with Email
+                try {
+                    $userModel->createWithEmail($identity);
+                } catch (Exception $e) {
+                    // Ignore duplicate entry errors - user might already exist
+                    error_log("User creation failed (likely duplicate): " . $e->getMessage());
                 }
+                // Always try to find user again, even if create failed
+                $user = $userModel->findByEmail($identity);
             }
         } else {
             $user = $userModel->findByPhone($identity);
             if (!$user) {
-                // Create user with Phone
-                if ($userModel->createWithPhone($identity)) {
-                    $user = $userModel->findByPhone($identity);
+                // Try to create user with Phone
+                try {
+                    $userModel->createWithPhone($identity);
+                } catch (Exception $e) {
+                    // Ignore duplicate entry errors - user might already exist
+                    error_log("User creation failed (likely duplicate): " . $e->getMessage());
                 }
+                // Always try to find user again, even if create failed
+                $user = $userModel->findByPhone($identity);
             }
         }
         
         if (!$user) {
-             die("Error creating user/logging in");
+             // Last resort - this should rarely happen
+             error_log("Critical: User not found after creation attempt for identity: $identity");
+             renderView('auth/verify', [
+                 'phone' => $identity,
+                 'is_email' => $isEmail,
+                 'error' => 'Unable to complete login. Please try again or contact support.'
+             ]);
+             return;
         }
 
         // Login User
@@ -242,7 +265,15 @@ class AuthController {
         unset($_SESSION['login_phone']);
         unset($_SESSION['login_email']);
 
-        header('Location: ' . BASE_URL);
+        // Redirect to original page if set, otherwise homepage
+        $redirect = $_SESSION['login_redirect'] ?? '';
+        unset($_SESSION['login_redirect']);
+        
+        if (!empty($redirect)) {
+            header('Location: ' . BASE_URL . $redirect);
+        } else {
+            header('Location: ' . BASE_URL);
+        }
         exit;
     }
 

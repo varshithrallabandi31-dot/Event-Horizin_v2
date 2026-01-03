@@ -8,6 +8,7 @@ class User {
     public $id;
     public $phone;
     public $name;
+    public $email;
     public $bio;
     public $interests;
 

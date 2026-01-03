@@ -111,6 +111,37 @@ if (empty($eventSchedule)) {
             </div>
         </div>
         
+        <!-- RSVP Button -->
+        <div class="mb-8">
+            <?php if (!isset($_SESSION['user_id'])): ?>
+                <!-- Not logged in - Redirect to login -->
+                <a href="<?php echo BASE_URL; ?>login?redirect=<?php echo urlencode('event/' . $event['id']); ?>" 
+                   class="inline-flex items-center gap-3 px-10 py-5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-full transition transform hover:scale-105 shadow-2xl shadow-brand-500/30">
+                    <i data-lucide="calendar-plus" class="w-6 h-6"></i>
+                    RSVP Now
+                </a>
+            <?php elseif ($rsvpStatus === 'approved'): ?>
+                <!-- Already approved -->
+                <div class="inline-flex items-center gap-3 px-10 py-5 bg-green-500 text-white font-bold rounded-full shadow-2xl">
+                    <i data-lucide="check-circle" class="w-6 h-6"></i>
+                    You're Registered!
+                </div>
+            <?php elseif ($rsvpStatus === 'pending'): ?>
+                <!-- Pending approval -->
+                <div class="inline-flex items-center gap-3 px-10 py-5 bg-yellow-500 text-white font-bold rounded-full shadow-2xl">
+                    <i data-lucide="clock" class="w-6 h-6"></i>
+                    Pending Approval
+                </div>
+            <?php else: ?>
+                <!-- Logged in but not registered - Show RSVP modal -->
+                <button @click="showRsvpModal = true" 
+                        class="inline-flex items-center gap-3 px-10 py-5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-full transition transform hover:scale-105 shadow-2xl shadow-brand-500/30">
+                    <i data-lucide="calendar-plus" class="w-6 h-6"></i>
+                    RSVP Now
+                </button>
+            <?php endif; ?>
+        </div>
+        
         <!-- Scroll Indicator -->
         <div class="animate-bounce">
             <i data-lucide="chevron-down" class="w-8 h-8 text-white/70"></i>
@@ -1478,7 +1509,10 @@ function eventPage() {
             }
             
             fetch('<?php echo BASE_URL; ?>event/<?php echo $event['id']; ?>/delete', {
-                method: 'POST'
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
             })
             .then(res => res.json())
             .then(data => {

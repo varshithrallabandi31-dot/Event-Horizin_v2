@@ -261,7 +261,7 @@ class EventController {
             }
 
             header('Content-Type: application/json');
-            echo json_encode(['status' => 'success', 'id' => $eventId, 'redirect' => BASE_URL]);
+            echo json_encode(['status' => 'success', 'id' => $eventId, 'redirect' => BASE_URL . 'event/' . $eventId]);
         } else {
             header('Content-Type: application/json');
             echo json_encode(['status' => 'error', 'message' => 'Failed to save event']);
@@ -1267,10 +1267,21 @@ class EventController {
         
         $conn->prepare("DELETE FROM events WHERE id = ?")->execute([$eventId]);
 
-        // Return JSON response
-        header('Content-Type: application/json');
-        echo json_encode(['status' => 'success', 'message' => 'Event deleted successfully']);
-        exit;
+        // Check if this is an AJAX request
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+                  strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+        
+        if ($isAjax) {
+            // Return JSON response for AJAX
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'success', 'message' => 'Event deleted successfully']);
+            exit;
+        } else {
+            // Redirect to dashboard with success message for non-AJAX
+            $_SESSION['success_message'] = 'Event deleted successfully!';
+            header('Location: ' . BASE_URL . 'organizer/dashboard');
+            exit;
+        }
     }
 
     public function generatePlan() {

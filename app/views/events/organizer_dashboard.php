@@ -474,9 +474,49 @@
                     <button @click="open = false" class="flex-1 px-6 py-3 text-charcoal-600 font-semibold border-2 border-charcoal-200 rounded-xl hover:bg-charcoal-50 transition">
                         Cancel
                     </button>
-                    <a :href="'<?php echo BASE_URL; ?>event/' + eventId + '/delete'" class="flex-1 px-6 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition text-center">
+                    <button 
+                        x-on:click="
+                            fetch('<?php echo BASE_URL; ?>event/' + eventId + '/delete', {
+                                method: 'POST',
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                console.log('Delete response:', data);
+                                if (data.status === 'success') {
+                                    console.log('Showing success toast...');
+                                    if (typeof window.showToast === 'function') {
+                                        window.showToast('success', data.message || 'Event deleted successfully', 'Success');
+                                    } else {
+                                        console.error('showToast function not found!');
+                                        alert('Event deleted successfully');
+                                    }
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 2500);
+                                } else {
+                                    if (typeof window.showToast === 'function') {
+                                        window.showToast('error', data.message || 'Failed to delete event', 'Error');
+                                    } else {
+                                        alert(data.message || 'Failed to delete event');
+                                    }
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                if (typeof window.showToast === 'function') {
+                                    window.showToast('error', 'An error occurred. Please try again.', 'Error');
+                                } else {
+                                    alert('An error occurred. Please try again.');
+                                }
+                            });
+                            open = false;
+                        " 
+                        class="flex-1 px-6 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition text-center">
                         Delete Event
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>
@@ -748,62 +788,4 @@
         <?php endif; ?>
     </div>
     <?php endif; ?>
-                <thead>
-                    <tr class="bg-cream-100 text-charcoal-700 text-sm uppercase tracking-wider">
-                        <th class="px-6 py-4 font-semibold">Candidate</th>
-                        <th class="px-6 py-4 font-semibold">Event</th>
-                        <th class="px-6 py-4 font-semibold">Interest</th>
-                        <th class="px-6 py-4 font-semibold">Status</th>
-                        <th class="px-6 py-4 font-semibold">Date</th>
-                        <th class="px-6 py-4 font-semibold text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-charcoal-200">
-                    <?php foreach($rsvps as $rsvp): ?>
-                    <tr class="hover:bg-cream-50 transition" x-show="selectedEvent === 'all' || selectedEvent === '<?php echo $rsvp['event_id']; ?>'">
-                        <td class="px-6 py-4">
-                            <div class="font-bold text-charcoal-900 dark:text-white"><?php echo htmlspecialchars($rsvp['name'] ?? ''); ?></div>
-                            <div class="text-charcoal-500 dark:text-charcoal-400 text-sm"><?php echo htmlspecialchars($rsvp['phone'] ?? ''); ?></div>
-                        </td>
-                        <td class="px-6 py-4 text-charcoal-700">
-                            <?php echo htmlspecialchars($rsvp['event_title'] ?? ''); ?>
-                        </td>
-                        <td class="px-6 py-4 text-charcoal-600 text-sm">
-                            <?php 
-                                $answers = json_decode($rsvp['answers'], true);
-                                echo htmlspecialchars($answers['interest'] ?? 'N/A');
-                            ?>
-                        </td>
-                        <td class="px-6 py-4">
-                            <?php if($rsvp['status'] === 'pending'): ?>
-                                <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold uppercase">Pending</span>
-                            <?php elseif($rsvp['status'] === 'approved'): ?>
-                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold uppercase">Approved</span>
-                            <?php else: ?>
-                                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold uppercase">Rejected</span>
-                            <?php endif; ?>
-                        </td>
-                        <td class="px-6 py-4 text-charcoal-500 text-sm">
-                            <?php echo date('M d, Y', strtotime($rsvp['created_at'])); ?>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <?php if($rsvp['status'] === 'pending'): ?>
-                                <div class="flex justify-end gap-2">
-                                    <a href="<?php echo BASE_URL; ?>rsvp/<?php echo $rsvp['id']; ?>/approve" class="p-2 bg-green-100 text-green-700 hover:bg-green-600 hover:text-white rounded-lg transition">
-                                        <i data-lucide="check" class="w-5 h-5"></i>
-                                    </a>
-                                    <a href="<?php echo BASE_URL; ?>rsvp/<?php echo $rsvp['id']; ?>/reject" class="p-2 bg-red-100 text-red-700 hover:bg-red-600 hover:text-white rounded-lg transition">
-                                        <i data-lucide="x" class="w-5 h-5"></i>
-                                    </a>
-                                </div>
-                            <?php else: ?>
-                                <span class="text-charcoal-400 text-sm">No actions</span>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
 </div>
